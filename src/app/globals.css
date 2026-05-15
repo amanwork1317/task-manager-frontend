@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f1f5f9;
+  --foreground: #0f172a;
+  --card: rgba(255, 255, 255, 0.8);
+  --card-foreground: #0f172a;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --border: rgba(226, 232, 240, 0.5);
+  --radius-card: 20px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  
+  --radius-card: var(--radius-card);
+  
+  --font-sans: 'Outfit', 'Inter', system-ui, sans-serif;
+}
+
+@layer base {
+  html, body {
+    min-height: 100vh;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1 { @apply text-4xl font-extrabold tracking-tight; }
+  h2 { @apply text-2xl font-bold tracking-tight; }
+  h3 { @apply text-lg font-semibold tracking-tight; }
+}
+
+.glass-card {
+  @apply backdrop-blur-md bg-card border border-border;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-linear-to-r from-indigo-600 to-purple-600 font-bold;
+}
+
+.hover-lift {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+}
+
+/* Aggressively remove all default focus outlines from Recharts */
+svg:focus,
+.recharts-wrapper:focus,
+.recharts-surface:focus,
+.recharts-legend-wrapper:focus,
+.recharts-tooltip-wrapper:focus,
+path:focus,
+rect:focus,
+circle:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Specific to the SVG container */
+.recharts-surface {
+  outline: none !important;
+}
