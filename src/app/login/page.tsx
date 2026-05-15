@@ -19,6 +19,8 @@ import {
   Globe
 } from 'lucide-react';
 
+import { API_ENDPOINTS } from '@/lib/api';
+
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,7 +36,7 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(API_ENDPOINTS.LOGIN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -260,7 +262,7 @@ export default function LoginPage() {
 
             <div className="mt-10 pt-8 border-t border-slate-100 flex items-center justify-between">
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                © 2026 <span className="text-slate-900">Aman</span>
+                © 2026 <span className="text-slate-900">Task Manager</span>
               </p>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>

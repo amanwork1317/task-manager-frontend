@@ -77,7 +77,10 @@ interface Notification {
   sender: { name: string; avatar?: string };
 }
 
+import { API_ENDPOINTS } from '@/lib/api';
+
 export default function Dashboard() {
+  // ... existing component logic ...
   const { user, token } = useAuth();
   const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -89,8 +92,8 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       const [taskRes, notifRes] = await Promise.all([
-        fetch('http://localhost:5000/api/tasks', { headers: { Authorization: `Bearer ${token}` } }),
-        fetch('http://localhost:5000/api/notifications', { headers: { Authorization: `Bearer ${token}` } })
+        fetch(API_ENDPOINTS.TASKS, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(API_ENDPOINTS.NOTIFICATIONS, { headers: { Authorization: `Bearer ${token}` } })
       ]);
       
       const [taskData, notifData] = await Promise.all([taskRes.json(), notifRes.json()]);
@@ -111,7 +114,7 @@ export default function Dashboard() {
   const handleNotificationClick = async (notif: Notification) => {
     try {
       // Mark as read in backend
-      await fetch(`http://localhost:5000/api/notifications/${notif._id}/read`, {
+      await fetch(`${API_ENDPOINTS.NOTIFICATIONS}/${notif._id}/read`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -131,7 +134,7 @@ export default function Dashboard() {
 
   const markAllRead = async () => {
     try {
-      await fetch('http://localhost:5000/api/notifications/mark-all-read', {
+      await fetch(`${API_ENDPOINTS.NOTIFICATIONS}/mark-all-read`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` }
       });
