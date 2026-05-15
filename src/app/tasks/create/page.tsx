@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Plus
 } from 'lucide-react';
+import { API_ENDPOINTS } from '@/lib/api';
 
 interface User {
   _id: string;
@@ -40,7 +41,7 @@ export default function CreateTaskPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/users', {
+        const res = await fetch(API_ENDPOINTS.USERS, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -63,7 +64,7 @@ export default function CreateTaskPage() {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:5000/api/tasks', {
+      const res = await fetch(API_ENDPOINTS.TASKS, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -5,5 +5,9 @@ export const API_ENDPOINTS = {
   TASKS: `${API_BASE_URL}/api/tasks`,
   USERS: `${API_BASE_URL}/api/users`,
   NOTIFICATIONS: `${API_BASE_URL}/api/notifications`,
-  TEAM: `${API_BASE_URL}/api/users/team`, // Adjust based on your actual routes
+  TEAM: `${API_BASE_URL}/api/users/team`,
+  FORGOT_PASSWORD: `${API_BASE_URL}/api/auth/forgot-password`,
+  RESET_PASSWORD: `${API_BASE_URL}/api/auth/reset-password`,
+  USERS_ME: `${API_BASE_URL}/api/users/me`,
+  REGISTER: `${API_BASE_URL}/api/auth/register`,
 };

@@ -11,10 +11,13 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
+import { API_ENDPOINTS } from '@/lib/api';
 
 export default function ResetPasswordPage() {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [formData, setFormData] = useState({
+    password: '',
+    confirmPassword: ''
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -24,10 +27,10 @@ export default function ResetPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       return setMessage({ type: 'error', text: 'Passwords do not match' });
     }
-    if (password.length < 6) {
+    if (formData.password.length < 6) {
       return setMessage({ type: 'error', text: 'Password must be at least 6 characters' });
     }
 
@@ -35,10 +38,10 @@ export default function ResetPasswordPage() {
     setMessage({ type: '', text: '' });
 
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/reset-password/${params.token}`, {
+      const res = await fetch(`${API_ENDPOINTS.RESET_PASSWORD}/${params.token}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ password: formData.password }),
       });
 
       const data = await res.json();
@@ -87,8 +90,8 @@ export default function ResetPasswordPage() {
                 <input
                   type={showPassword ? "text" : "password"}
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="••••••••"
                   className="w-full pl-12 pr-12 py-4 bg-white border border-border rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-medium"
                 />
@@ -109,8 +112,8 @@ export default function ResetPasswordPage() {
                 <input
                   type={showPassword ? "text" : "password"}
                   required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   placeholder="••••••••"
                   className="w-full pl-12 pr-4 py-4 bg-white border border-border rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-medium"
                 />

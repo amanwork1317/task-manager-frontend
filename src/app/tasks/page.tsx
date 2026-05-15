@@ -15,6 +15,7 @@ import {
   Search,
   XCircle
 } from 'lucide-react';
+import { API_ENDPOINTS } from '@/lib/api';
 
 interface Task {
   _id: string;
@@ -44,7 +45,7 @@ export default function ManageTasksPage() {
 
   const fetchTasks = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/tasks', {
+      const res = await fetch(API_ENDPOINTS.TASKS, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -65,7 +66,7 @@ export default function ManageTasksPage() {
   const handleStatusChange = async (taskId: string, newStatus: string) => {
     setUpdatingId(taskId);
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+      const res = await fetch(`${API_ENDPOINTS.TASKS}/${taskId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +78,6 @@ export default function ManageTasksPage() {
       const data = await res.json();
 
       if (res.ok) {
-        // Backend might have converted 'completed' to 'pending-approval' for non-admins
         setTasks(tasks.map(t => t._id === taskId ? data.data.task : t));
       } else {
         alert(data.message || 'Failed to update task');
@@ -92,7 +92,7 @@ export default function ManageTasksPage() {
   const handleApprove = async (taskId: string) => {
     setUpdatingId(taskId);
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks/${taskId}/approve`, {
+      const res = await fetch(`${API_ENDPOINTS.TASKS}/${taskId}/approve`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -111,7 +111,7 @@ export default function ManageTasksPage() {
   const handleDecline = async (taskId: string) => {
     setUpdatingId(taskId);
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks/${taskId}/decline`, {
+      const res = await fetch(`${API_ENDPOINTS.TASKS}/${taskId}/decline`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -131,7 +131,7 @@ export default function ManageTasksPage() {
     if (!confirm('Are you sure you want to delete this task?')) return;
     
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+      const res = await fetch(`${API_ENDPOINTS.TASKS}/${taskId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });

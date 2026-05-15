@@ -22,6 +22,7 @@ import {
   TriangleAlert,
   Key
 } from 'lucide-react';
+import { API_ENDPOINTS, API_BASE_URL } from '@/lib/api';
 
 interface User {
   _id: string;
@@ -62,7 +63,7 @@ export default function TeamMembersPage() {
 
   const fetchTeam = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/users', {
+      const res = await fetch(API_ENDPOINTS.USERS, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -113,8 +114,8 @@ export default function TeamMembersPage() {
     setSubmitting(true);
 
     const url = editingUser 
-      ? `http://localhost:5000/api/users/${editingUser._id}`
-      : 'http://localhost:5000/api/auth/register';
+      ? `${API_ENDPOINTS.USERS}/${editingUser._id}`
+      : API_ENDPOINTS.REGISTER;
     
     const method = editingUser ? 'PATCH' : 'POST';
 
@@ -151,7 +152,7 @@ export default function TeamMembersPage() {
     if (!targetUser) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${targetUser._id}`, {
+      const res = await fetch(`${API_ENDPOINTS.USERS}/${targetUser._id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -175,7 +176,7 @@ export default function TeamMembersPage() {
     if (!resetPasswordModal.user || !resetPasswordModal.newPassword) return;
     setSubmitting(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${resetPasswordModal.user._id}/reset-password`, {
+      const res = await fetch(`${API_ENDPOINTS.USERS}/${resetPasswordModal.user._id}/reset-password`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -202,7 +203,7 @@ export default function TeamMembersPage() {
     if (!confirm('Are you sure you want to remove this team member?')) return;
     
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+      const res = await fetch(`${API_ENDPOINTS.USERS}/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });

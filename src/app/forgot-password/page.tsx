@@ -12,6 +12,8 @@ import {
   ShieldCheck
 } from 'lucide-react';
 
+import { API_ENDPOINTS } from '@/lib/api';
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,7 +25,7 @@ export default function ForgotPasswordPage() {
     setMessage({ type: '', text: '' });
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/forgot-password', {
+      const res = await fetch(API_ENDPOINTS.FORGOT_PASSWORD, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
