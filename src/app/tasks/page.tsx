@@ -159,7 +159,7 @@ export default function ManageTasksPage() {
         <div>
           <h1 className="text-4xl font-extrabold tracking-tight">Manage <span className="gradient-text">Tasks</span></h1>
           <p className="text-muted-foreground font-medium mt-1">
-            {user?.role === 'admin' ? 'Monitor and manage team assignments.' : 'Track and update your assigned tasks.'}
+            {['admin', 'superadmin'].includes(user?.role as string) ? 'Monitor and manage team assignments.' : 'Track and update your assigned tasks.'}
           </p>
         </div>
 
@@ -175,7 +175,24 @@ export default function ManageTasksPage() {
         </div>
       </header>
 
-      {filteredTasks.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-1 gap-6">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="glass-card p-6 rounded-[24px] flex flex-col md:flex-row items-start md:items-center gap-6 animate-pulse">
+              <div className="w-14 h-14 bg-slate-200 rounded-2xl hidden md:block"></div>
+              <div className="flex-1 space-y-3 w-full">
+                <div className="flex items-center gap-3">
+                  <div className="h-6 bg-slate-200 rounded-md w-1/3"></div>
+                  <div className="h-4 bg-slate-200 rounded-full w-16"></div>
+                </div>
+                <div className="h-4 bg-slate-200 rounded-md w-2/3"></div>
+                <div className="h-3 bg-slate-200 rounded-md w-1/4 mt-2"></div>
+              </div>
+              <div className="w-full md:w-44 h-10 bg-slate-200 rounded-xl"></div>
+            </div>
+          ))}
+        </div>
+      ) : filteredTasks.length === 0 ? (
         <div className="glass-card p-20 rounded-[32px] text-center space-y-4">
           <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto text-muted-foreground">
             <ClipboardList className="w-8 h-8" />
@@ -229,7 +246,7 @@ export default function ManageTasksPage() {
               </div>
 
               <div className="flex items-center gap-4 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-border">
-                {task.status === 'pending-approval' && user?.role === 'admin' ? (
+                {task.status === 'pending-approval' && ['admin', 'superadmin'].includes(user?.role as string) ? (
                   <div className="flex items-center gap-2 w-full md:w-auto">
                     <button 
                       disabled={updatingId === task._id}
@@ -249,7 +266,7 @@ export default function ManageTasksPage() {
                 ) : (
                   <div className="relative group flex-1 md:flex-none">
                     <select 
-                      disabled={updatingId === task._id || (task.status === 'completed' && user?.role !== 'admin') || (task.status === 'pending-approval' && user?.role !== 'admin')}
+                      disabled={updatingId === task._id || (task.status === 'completed' && !['admin', 'superadmin'].includes(user?.role as string)) || (task.status === 'pending-approval' && !['admin', 'superadmin'].includes(user?.role as string))}
                       value={task.status}
                       onChange={(e) => handleStatusChange(task._id, e.target.value)}
                       className={`w-full md:w-44 pl-4 pr-10 py-2.5 bg-muted/50 border border-border rounded-xl text-sm font-bold appearance-none cursor-pointer focus:ring-2 focus:ring-primary/20 ${
@@ -266,7 +283,7 @@ export default function ManageTasksPage() {
                   </div>
                 )}
 
-                {user?.role === 'admin' && (
+                {['admin', 'superadmin'].includes(user?.role as string) && (
                   <button 
                     onClick={() => handleDelete(task._id)}
                     className="p-2.5 text-red-500 bg-red-50 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-sm"

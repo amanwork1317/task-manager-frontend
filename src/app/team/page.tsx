@@ -20,7 +20,9 @@ import {
   Ban,
   UserCheck,
   TriangleAlert,
-  Key
+  Key,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { API_ENDPOINTS, API_BASE_URL } from '@/lib/api';
 
@@ -28,16 +30,16 @@ interface User {
   _id: string;
   name: string;
   email: string;
-  role: 'admin' | 'member';
+  role: 'superadmin' | 'admin' | 'member';
   active: boolean;
   avatar?: string;
   createdAt: string;
 }
 
 const Tooltip = ({ children, text }: { children: React.ReactNode, text: string }) => (
-  <div className="relative group">
+  <div className="relative group/tooltip">
     {children}
-    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-50 shadow-2xl scale-90 group-hover:scale-100">
+    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl opacity-0 group-hover/tooltip:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-50 shadow-2xl scale-90 group-hover/tooltip:scale-100">
       {text}
       <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-900" />
     </div>
@@ -58,6 +60,9 @@ export default function TeamMembersPage() {
   
   // Reset Password Modal State
   const [resetPasswordModal, setResetPasswordModal] = useState<{ open: boolean, user: User | null, newPassword: '' }>({ open: false, user: null, newPassword: '' });
+  
+  const [showAddPassword, setShowAddPassword] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
   
   const { token, user } = useAuth();
 
@@ -224,7 +229,7 @@ export default function TeamMembersPage() {
           <p className="text-muted-foreground font-medium mt-1">Manage your team and their access levels.</p>
         </div>
         
-        {user?.role === 'admin' && (
+        {['admin', 'superadmin'].includes(user?.role as string) && (
           <Tooltip text="Create New Account">
             <button 
               onClick={handleOpenAddModal}
@@ -237,7 +242,26 @@ export default function TeamMembersPage() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {team.map((member) => (
+          {loading ? (
+            [1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="bg-white rounded-[40px] p-8 border border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.02)] animate-pulse">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="w-20 h-6 bg-slate-200 rounded-full"></div>
+                  <div className="w-12 h-6 bg-slate-200 rounded-full"></div>
+                </div>
+                <div className="flex flex-col items-center mb-8">
+                  <div className="w-24 h-24 bg-slate-200 rounded-[32px] mb-6"></div>
+                  <div className="w-32 h-6 bg-slate-200 rounded-md mb-2"></div>
+                  <div className="w-40 h-4 bg-slate-200 rounded-md"></div>
+                </div>
+                <div className="flex items-center gap-2 pt-6 border-t border-slate-50">
+                  <div className="flex-1 h-10 bg-slate-200 rounded-[20px]"></div>
+                  <div className="w-12 h-10 bg-slate-200 rounded-[20px]"></div>
+                  <div className="w-12 h-10 bg-slate-200 rounded-[20px]"></div>
+                </div>
+              </div>
+            ))
+          ) : team.map((member) => (
             <motion.div 
               layout
               key={member._id}
@@ -256,7 +280,7 @@ export default function TeamMembersPage() {
                   <span className="text-[10px] font-black uppercase tracking-[0.1em]">{member.role}</span>
                 </div>
                 
-                {user?.role === 'admin' && member._id !== user.id && (
+                {['admin', 'superadmin'].includes(user?.role as string) && member._id !== user?.id && (
                   <Tooltip text={member.active ? 'Revoke Access' : 'Restore Access'}>
                     <div className="flex flex-col items-end gap-1">
                       <button 
@@ -316,7 +340,7 @@ export default function TeamMembersPage() {
               </div>
 
               {/* Action Section */}
-              {user?.role === 'admin' && member._id !== user.id ? (
+              {['admin', 'superadmin'].includes(user?.role as string) && member._id !== user?.id ? (
                 <div className="flex items-center gap-2 pt-6 border-t border-slate-50">
                   <Tooltip text="Modify Details">
                     <button 
@@ -450,7 +474,7 @@ export default function TeamMembersPage() {
                       className={`w-full pl-10 pr-4 py-2.5 bg-muted/50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all ${
                         error.includes('email') ? 'border-red-500' : 'border-border'
                       }`}
-                      placeholder="jane@hrms.com"
+                      placeholder="jane@taskmanager.com"
                     />
                   </div>
                 </div>
@@ -461,14 +485,21 @@ export default function TeamMembersPage() {
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <input 
-                        type="password" required minLength={6}
+                        type={showAddPassword ? "text" : "password"} required minLength={6}
                         value={formData.password}
                         onChange={(e) => setFormData({...formData, password: e.target.value})}
-                        className={`w-full pl-10 pr-4 py-2.5 bg-muted/50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all ${
+                        className={`w-full pl-10 pr-10 py-2.5 bg-muted/50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all ${
                           error.includes('Password') ? 'border-red-500' : 'border-border'
                         }`}
                         placeholder="••••••••"
                       />
+                      <button 
+                        type="button"
+                        onClick={() => setShowAddPassword(!showAddPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showAddPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
                     </div>
                   </div>
                 )}
@@ -479,7 +510,9 @@ export default function TeamMembersPage() {
                       <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <select value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value as any})} className="w-full pl-10 pr-4 py-2.5 bg-muted/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none">
                         <option value="member">Team Member</option>
-                        <option value="admin">Administrator</option>
+                        {user?.role === 'superadmin' && (
+                          <option value="admin">Administrator</option>
+                        )}
                       </select>
                     </div>
                   </div>
@@ -532,12 +565,19 @@ export default function TeamMembersPage() {
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
                     <input 
-                      type="password"
+                      type={showResetPassword ? "text" : "password"}
                       value={resetPasswordModal.newPassword}
                       onChange={(e) => setResetPasswordModal({ ...resetPasswordModal, newPassword: e.target.value as any })}
                       placeholder="••••••••"
-                      className="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all font-bold text-slate-700"
+                      className="w-full pl-11 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all font-bold text-slate-700"
                     />
+                    <button 
+                      type="button"
+                      onClick={() => setShowResetPassword(!showResetPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    >
+                      {showResetPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
                   </div>
                 </div>
 

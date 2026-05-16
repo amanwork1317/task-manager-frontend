@@ -34,10 +34,13 @@ export default function Sidebar() {
   const { user, logout } = useAuth();
 
   // Filter items based on role
-  const visibleItems = [...navItems];
-  if (user?.role === 'admin') {
+  let visibleItems = [...navItems];
+  if (user?.role === 'superadmin') {
+    visibleItems = visibleItems.filter(item => item.href !== '/tasks');
+  } else if (user?.role === 'admin') {
     // Insert Create Task for Admins
-    visibleItems.splice(2, 0, { label: 'Create Task', href: '/tasks/create', icon: PlusSquare });
+    const tasksIndex = visibleItems.findIndex(item => item.href === '/tasks');
+    visibleItems.splice(tasksIndex + 1, 0, { label: 'Create Task', href: '/tasks/create', icon: PlusSquare });
   }
   const isPublicPage = pathname === '/login' || 
                        pathname === '/signup' || 
